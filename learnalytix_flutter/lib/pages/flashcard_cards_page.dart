@@ -2,33 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/flashcard_provider.dart';
 import '../models/flashcard.dart';
-import 'flashcard_detail_page.dart';
+import '../models/flashcard_set.dart';
 
-class FlashcardCardsPage extends StatefulWidget {
-  final String setId;
+class FlashcardCardsPage extends StatelessWidget {
+  final FlashcardSet set;
 
-  const FlashcardCardsPage({super.key, required this.setId});
-
-  @override
-  State<FlashcardCardsPage> createState() => _FlashcardCardsPageState();
-}
-
-class _FlashcardCardsPageState extends State<FlashcardCardsPage> {
-  @override
-  void initState() {
-    super.initState();
-    // Load flashcards khi trang được khởi tạo
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<FlashcardProvider>(context, listen: false)
-          .loadFlashcardsBySet(widget.setId);
-    });
-  }
+  const FlashcardCardsPage({super.key, required this.set});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flashcards'),
+        title: Text(set.name),
       ),
       body: Consumer<FlashcardProvider>(
         builder: (context, provider, child) {
@@ -42,31 +27,60 @@ class _FlashcardCardsPageState extends State<FlashcardCardsPage> {
             );
           }
 
-          final flashcards = provider.flashcards;
-          if (flashcards.isEmpty) {
+          final cards = provider.cards;
+          if (cards.isEmpty) {
             return const Center(
               child: Text('No flashcards found in this set'),
             );
           }
 
           return ListView.builder(
-            itemCount: flashcards.length,
+            itemCount: cards.length,
             itemBuilder: (context, index) {
-              final card = flashcards[index];
+              final card = cards[index];
               return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: ListTile(
-                  title: Text(card.question),
-                  subtitle: Text('Type: ${card.type.toString().split('.').last}'),
-                  trailing: const Icon(Icons.arrow_forward_ios),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => FlashcardDetailPage(flashcard: card),
+                margin: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (card.imageUrl != null)
+                      Image.network(
+                        card.imageUrl!,
+                        height: 200,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
                       ),
-                    );
-                  },
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            card.question,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            card.correctAnswer ?? '',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          if (card.explanation != null) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              card.explanation!,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               );
             },
