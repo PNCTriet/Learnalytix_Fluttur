@@ -6,36 +6,19 @@ import '../services/flashcard_service.dart';
 
 class FlashcardProvider with ChangeNotifier {
   final FlashcardService _service;
-  List<Flashcard> _flashcards = [];
   List<FlashcardSet> _sets = [];
+  List<Flashcard> _cards = [];
   List<MultipleChoiceOption> _currentOptions = [];
   bool _isLoading = false;
   String? _error;
 
   FlashcardProvider(this._service);
 
-  List<Flashcard> get flashcards => _flashcards;
   List<FlashcardSet> get sets => _sets;
+  List<Flashcard> get cards => _cards;
   List<MultipleChoiceOption> get currentOptions => _currentOptions;
   bool get isLoading => _isLoading;
   String? get error => _error;
-
-  Future<void> loadFlashcards() async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      final flashcards = await _service.getFlashcards();
-      _flashcards = flashcards;
-      _error = null;
-    } catch (e) {
-      _error = e.toString();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
 
   Future<void> loadFlashcardSets() async {
     _isLoading = true;
@@ -43,9 +26,7 @@ class FlashcardProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final sets = await _service.getFlashcardSets();
-      _sets = sets;
-      _error = null;
+      _sets = await _service.getFlashcardSets();
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -60,8 +41,23 @@ class FlashcardProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final flashcards = await _service.getFlashcardsBySet(setId);
-      _flashcards = flashcards;
+      _cards = await _service.getFlashcardsBySet(setId);
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadFlashcards() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final flashcards = await _service.getFlashcards();
+      _cards = flashcards;
       _error = null;
     } catch (e) {
       _error = e.toString();
