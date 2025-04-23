@@ -114,71 +114,47 @@ class FlashcardService {
   Future<List<Flashcard>> getFlashcardsBySet(String setId) async {
     try {
       final response = await _supabase
-          .from('flashcard_set_cards')
-          .select('flashcard:flashcards(*)')
-          .eq('set_id', setId)
+          .from('flashcards')
+          .select()
+          .eq('flashcard_set_id', setId)
           .order('created_at', ascending: false);
 
       if (response == null) return [];
 
       return response.map<Flashcard>((json) {
         try {
-          final flashcardJson = json['flashcard'];
-          if (flashcardJson == null) {
-            return Flashcard(
-              id: '',
-              question: '',
-              type: QuestionType.multipleChoice,
-              difficulty: DifficultyLevel.easy,
-              studyMode: StudyMode.learn,
-              category: '',
-              correctAnswer: '',
-              explanation: '',
-              options: [],
-              tags: [],
-              timeLimit: 0,
-              lastReviewed: null,
-              nextReview: null,
-              createdAt: DateTime.now(),
-              updatedAt: DateTime.now(),
-              userId: '',
-            );
-          }
+          print('Processing flashcard with data: $json');
+          
+          // Tạo một map mới với các trường đã được xử lý và giá trị mặc định
+          final processedJson = {
+            'id': json['id'] ?? '',
+            'question': json['question_text'] ?? '',
+            'correct_answer': json['answer_text'] ?? '',
+            'type': _parseQuestionType(json['question_type']),
+            'difficulty': _parseDifficultyLevel(json['difficulty']),
+            'study_mode': _parseStudyMode(json['study_mode']),
+            'category': json['category'] ?? '',
+            'explanation': json['explanation'] ?? '',
+            'tags': json['tags'] ?? [],
+            'time_limit': json['time_limit'] ?? 0,
+            'created_at': json['created_at'] ?? DateTime.now(),
+            'updated_at': json['updated_at'] ?? DateTime.now(),
+            'last_reviewed': json['last_reviewed'],
+            'next_review': json['next_review'],
+            'user_id': json['user_id'] ?? '',
+            'image_url': json['image_url'],
+            'options': json['options'] != null ? (json['options'] as List)
+                .map((option) => MultipleChoiceOption.fromJson(option))
+                .toList() : [],
+          };
 
-          // Xử lý các trường có thể null
-          final processedJson = Map<String, dynamic>.from(flashcardJson);
-          processedJson['question'] = flashcardJson['question'] ?? '';
-          processedJson['type'] = _parseQuestionType(flashcardJson['type']);
-          processedJson['difficulty'] = _parseDifficultyLevel(flashcardJson['difficulty']);
-          processedJson['study_mode'] = _parseStudyMode(flashcardJson['study_mode']);
-          processedJson['category'] = flashcardJson['category'] ?? '';
-          processedJson['correct_answer'] = flashcardJson['correct_answer'] ?? '';
-          processedJson['explanation'] = flashcardJson['explanation'] ?? '';
-          processedJson['tags'] = flashcardJson['tags'] ?? [];
-          processedJson['time_limit'] = flashcardJson['time_limit'] ?? 0;
-          processedJson['user_id'] = flashcardJson['user_id'] ?? '';
-
-          return Flashcard.fromJson(processedJson);
+          final flashcard = Flashcard.fromJson(processedJson);
+          print('Successfully created flashcard: ${flashcard.id}');
+          return flashcard;
         } catch (e) {
           print('Error parsing flashcard: $e');
-          return Flashcard(
-            id: '',
-            question: '',
-            type: QuestionType.multipleChoice,
-            difficulty: DifficultyLevel.easy,
-            studyMode: StudyMode.learn,
-            category: '',
-            correctAnswer: '',
-            explanation: '',
-            options: [],
-            tags: [],
-            timeLimit: 0,
-            lastReviewed: null,
-            nextReview: null,
-            createdAt: DateTime.now(),
-            updatedAt: DateTime.now(),
-            userId: '',
-          );
+          print('JSON data that caused error: $json');
+          rethrow;
         }
       }).toList();
     } catch (e) {
@@ -275,9 +251,29 @@ class FlashcardService {
 
       if (response == null) return [];
 
-      return (response as List)
-          .map((json) => FlashcardSet.fromJson(json))
-          .toList();
+      return response.map<FlashcardSet>((json) {
+        try {
+          print('Processing flashcard set with data: $json');
+          
+          // Tạo một map mới với các trường đã được xử lý và giá trị mặc định
+          final processedJson = {
+            'id': json['id'] ?? '',
+            'name': json['name'] ?? '',
+            'description': json['description'] ?? '',
+            'created_at': json['created_at'] ?? DateTime.now(),
+            'updated_at': json['updated_at'] ?? DateTime.now(),
+            'user_id': json['user_id'] ?? '',
+          };
+
+          final set = FlashcardSet.fromJson(processedJson);
+          print('Successfully created flashcard set: ${set.id}');
+          return set;
+        } catch (e) {
+          print('Error parsing flashcard set: $e');
+          print('JSON data that caused error: $json');
+          rethrow;
+        }
+      }).toList();
     } catch (e) {
       print('Error in getFlashcardSets: $e');
       rethrow;

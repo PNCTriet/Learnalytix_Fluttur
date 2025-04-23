@@ -28,6 +28,7 @@ class Flashcard with _$Flashcard {
     @JsonKey(name: 'created_at') required DateTime createdAt,
     @JsonKey(name: 'updated_at') required DateTime updatedAt,
     @JsonKey(name: 'user_id') required String userId,
+    @JsonKey(name: 'image_url') String? imageUrl,
   }) = _Flashcard;
 
   factory Flashcard.fromJson(Map<String, dynamic> json) => _$FlashcardFromJson(json);
@@ -50,6 +51,7 @@ class Flashcard with _$Flashcard {
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'user_id': userId,
+      'image_url': imageUrl,
     };
   }
 } 

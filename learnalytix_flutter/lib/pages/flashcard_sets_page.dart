@@ -1,11 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/flashcard_provider.dart';
+import '../providers/auth_provider.dart';
 import '../models/flashcard_set.dart';
 import 'flashcard_cards_page.dart';
 
-class FlashcardSetsPage extends StatelessWidget {
+class FlashcardSetsPage extends StatefulWidget {
   const FlashcardSetsPage({super.key});
+
+  @override
+  State<FlashcardSetsPage> createState() => _FlashcardSetsPageState();
+}
+
+class _FlashcardSetsPageState extends State<FlashcardSetsPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Load flashcard sets khi trang được khởi tạo
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<FlashcardProvider>(context, listen: false).loadFlashcardSets();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +56,7 @@ class FlashcardSetsPage extends StatelessWidget {
                 child: ListTile(
                   title: Text(set.name),
                   subtitle: Text(set.description ?? ''),
-                  trailing: Text('${set.cardCount} cards'),
+                  trailing: const Icon(Icons.arrow_forward_ios),
                   onTap: () {
                     Navigator.push(
                       context,

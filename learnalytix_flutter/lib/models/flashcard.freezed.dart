@@ -46,6 +46,8 @@ mixin _$Flashcard {
   DateTime get updatedAt => throw _privateConstructorUsedError;
   @JsonKey(name: 'user_id')
   String get userId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'image_url')
+  String? get imageUrl => throw _privateConstructorUsedError;
 
   /// Serializes this Flashcard to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -81,7 +83,8 @@ abstract class $FlashcardCopyWith<$Res> {
       @JsonKey(name: 'next_review') DateTime? nextReview,
       @JsonKey(name: 'created_at') DateTime createdAt,
       @JsonKey(name: 'updated_at') DateTime updatedAt,
-      @JsonKey(name: 'user_id') String userId});
+      @JsonKey(name: 'user_id') String userId,
+      @JsonKey(name: 'image_url') String? imageUrl});
 }
 
 /// @nodoc
@@ -115,6 +118,7 @@ class _$FlashcardCopyWithImpl<$Res, $Val extends Flashcard>
     Object? createdAt = null,
     Object? updatedAt = null,
     Object? userId = null,
+    Object? imageUrl = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -181,6 +185,10 @@ class _$FlashcardCopyWithImpl<$Res, $Val extends Flashcard>
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
               as String,
+      imageUrl: freezed == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -212,7 +220,8 @@ abstract class _$$FlashcardImplCopyWith<$Res>
       @JsonKey(name: 'next_review') DateTime? nextReview,
       @JsonKey(name: 'created_at') DateTime createdAt,
       @JsonKey(name: 'updated_at') DateTime updatedAt,
-      @JsonKey(name: 'user_id') String userId});
+      @JsonKey(name: 'user_id') String userId,
+      @JsonKey(name: 'image_url') String? imageUrl});
 }
 
 /// @nodoc
@@ -244,6 +253,7 @@ class __$$FlashcardImplCopyWithImpl<$Res>
     Object? createdAt = null,
     Object? updatedAt = null,
     Object? userId = null,
+    Object? imageUrl = freezed,
   }) {
     return _then(_$FlashcardImpl(
       id: null == id
@@ -310,6 +320,10 @@ class __$$FlashcardImplCopyWithImpl<$Res>
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
               as String,
+      imageUrl: freezed == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -336,7 +350,8 @@ class _$FlashcardImpl implements _Flashcard {
       @JsonKey(name: 'next_review') this.nextReview,
       @JsonKey(name: 'created_at') required this.createdAt,
       @JsonKey(name: 'updated_at') required this.updatedAt,
-      @JsonKey(name: 'user_id') required this.userId})
+      @JsonKey(name: 'user_id') required this.userId,
+      @JsonKey(name: 'image_url') this.imageUrl})
       : _options = options,
         _tags = tags;
 
@@ -401,10 +416,13 @@ class _$FlashcardImpl implements _Flashcard {
   @override
   @JsonKey(name: 'user_id')
   final String userId;
+  @override
+  @JsonKey(name: 'image_url')
+  final String? imageUrl;
 
   @override
   String toString() {
-    return 'Flashcard(id: $id, question: $question, type: $type, difficulty: $difficulty, studyMode: $studyMode, category: $category, correctAnswer: $correctAnswer, explanation: $explanation, options: $options, tags: $tags, timeLimit: $timeLimit, lastReviewed: $lastReviewed, nextReview: $nextReview, createdAt: $createdAt, updatedAt: $updatedAt, userId: $userId)';
+    return 'Flashcard(id: $id, question: $question, type: $type, difficulty: $difficulty, studyMode: $studyMode, category: $category, correctAnswer: $correctAnswer, explanation: $explanation, options: $options, tags: $tags, timeLimit: $timeLimit, lastReviewed: $lastReviewed, nextReview: $nextReview, createdAt: $createdAt, updatedAt: $updatedAt, userId: $userId, imageUrl: $imageUrl)';
   }
 
   @override
@@ -438,7 +456,9 @@ class _$FlashcardImpl implements _Flashcard {
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
                 other.updatedAt == updatedAt) &&
-            (identical(other.userId, userId) || other.userId == userId));
+            (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.imageUrl, imageUrl) ||
+                other.imageUrl == imageUrl));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -460,7 +480,8 @@ class _$FlashcardImpl implements _Flashcard {
       nextReview,
       createdAt,
       updatedAt,
-      userId);
+      userId,
+      imageUrl);
 
   /// Create a copy of Flashcard
   /// with the given fields replaced by the non-null parameter values.
@@ -480,26 +501,26 @@ class _$FlashcardImpl implements _Flashcard {
 
 abstract class _Flashcard implements Flashcard {
   const factory _Flashcard(
-          {required final String id,
-          required final String question,
-          @JsonKey(name: 'type', unknownEnumValue: QuestionType.multipleChoice)
-          required final QuestionType type,
-          @JsonKey(name: 'difficulty', unknownEnumValue: DifficultyLevel.easy)
-          required final DifficultyLevel difficulty,
-          @JsonKey(name: 'study_mode', unknownEnumValue: StudyMode.learn)
-          required final StudyMode studyMode,
-          final String? category,
-          @JsonKey(name: 'correct_answer') final String? correctAnswer,
-          final String? explanation,
-          final List<MultipleChoiceOption>? options,
-          final List<String>? tags,
-          @JsonKey(name: 'time_limit') final int? timeLimit,
-          @JsonKey(name: 'last_reviewed') final DateTime? lastReviewed,
-          @JsonKey(name: 'next_review') final DateTime? nextReview,
-          @JsonKey(name: 'created_at') required final DateTime createdAt,
-          @JsonKey(name: 'updated_at') required final DateTime updatedAt,
-          @JsonKey(name: 'user_id') required final String userId}) =
-      _$FlashcardImpl;
+      {required final String id,
+      required final String question,
+      @JsonKey(name: 'type', unknownEnumValue: QuestionType.multipleChoice)
+      required final QuestionType type,
+      @JsonKey(name: 'difficulty', unknownEnumValue: DifficultyLevel.easy)
+      required final DifficultyLevel difficulty,
+      @JsonKey(name: 'study_mode', unknownEnumValue: StudyMode.learn)
+      required final StudyMode studyMode,
+      final String? category,
+      @JsonKey(name: 'correct_answer') final String? correctAnswer,
+      final String? explanation,
+      final List<MultipleChoiceOption>? options,
+      final List<String>? tags,
+      @JsonKey(name: 'time_limit') final int? timeLimit,
+      @JsonKey(name: 'last_reviewed') final DateTime? lastReviewed,
+      @JsonKey(name: 'next_review') final DateTime? nextReview,
+      @JsonKey(name: 'created_at') required final DateTime createdAt,
+      @JsonKey(name: 'updated_at') required final DateTime updatedAt,
+      @JsonKey(name: 'user_id') required final String userId,
+      @JsonKey(name: 'image_url') final String? imageUrl}) = _$FlashcardImpl;
 
   factory _Flashcard.fromJson(Map<String, dynamic> json) =
       _$FlashcardImpl.fromJson;
@@ -546,6 +567,9 @@ abstract class _Flashcard implements Flashcard {
   @override
   @JsonKey(name: 'user_id')
   String get userId;
+  @override
+  @JsonKey(name: 'image_url')
+  String? get imageUrl;
 
   /// Create a copy of Flashcard
   /// with the given fields replaced by the non-null parameter values.

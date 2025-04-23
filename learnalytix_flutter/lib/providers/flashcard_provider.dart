@@ -11,6 +11,7 @@ class FlashcardProvider with ChangeNotifier {
   List<MultipleChoiceOption> _currentOptions = [];
   bool _isLoading = false;
   String? _error;
+  List<Flashcard> _cards = [];
 
   FlashcardProvider(this._service);
 
@@ -19,6 +20,7 @@ class FlashcardProvider with ChangeNotifier {
   List<MultipleChoiceOption> get currentOptions => _currentOptions;
   bool get isLoading => _isLoading;
   String? get error => _error;
+  List<Flashcard> get cards => _cards;
 
   Future<void> loadFlashcards() async {
     _isLoading = true;
@@ -43,9 +45,7 @@ class FlashcardProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final sets = await _service.getFlashcardSets();
-      _sets = sets;
-      _error = null;
+      _sets = await _service.getFlashcardSets();
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -60,9 +60,7 @@ class FlashcardProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final flashcards = await _service.getFlashcardsBySet(setId);
-      _flashcards = flashcards;
-      _error = null;
+      _cards = await _service.getFlashcardsBySet(setId);
     } catch (e) {
       _error = e.toString();
     } finally {

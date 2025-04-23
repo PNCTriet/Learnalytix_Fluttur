@@ -3,7 +3,7 @@ import 'pages/home_page.dart';
 import 'pages/profile_page.dart';
 import 'pages/sign_in_page.dart';
 import 'pages/sign_up_page.dart';
-import 'pages/flashcard_page.dart';
+import 'pages/flashcard_sets_page.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -18,7 +18,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case '/sign-up':
       return MaterialPageRoute(builder: (_) => const SignUpPage());
     case '/flashcards':
-      return MaterialPageRoute(builder: (_) => const FlashcardPage());
+      return MaterialPageRoute(builder: (_) => const FlashcardSetsPage());
     default:
       return MaterialPageRoute(
         builder: (_) => Scaffold(

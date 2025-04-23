@@ -4,16 +4,31 @@ import '../providers/flashcard_provider.dart';
 import '../models/flashcard.dart';
 import '../models/flashcard_set.dart';
 
-class FlashcardCardsPage extends StatelessWidget {
+class FlashcardCardsPage extends StatefulWidget {
   final FlashcardSet set;
 
   const FlashcardCardsPage({super.key, required this.set});
 
   @override
+  State<FlashcardCardsPage> createState() => _FlashcardCardsPageState();
+}
+
+class _FlashcardCardsPageState extends State<FlashcardCardsPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Load flashcards khi trang được khởi tạo
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<FlashcardProvider>(context, listen: false)
+          .loadFlashcardsBySet(widget.set.id);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(set.name),
+        title: Text(widget.set.name),
       ),
       body: Consumer<FlashcardProvider>(
         builder: (context, provider, child) {

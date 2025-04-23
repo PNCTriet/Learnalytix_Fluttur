@@ -33,6 +33,7 @@ _$FlashcardImpl _$$FlashcardImplFromJson(Map<String, dynamic> json) =>
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
       userId: json['user_id'] as String,
+      imageUrl: json['image_url'] as String?,
     );
 
 Map<String, dynamic> _$$FlashcardImplToJson(_$FlashcardImpl instance) =>
@@ -53,6 +54,7 @@ Map<String, dynamic> _$$FlashcardImplToJson(_$FlashcardImpl instance) =>
       'created_at': instance.createdAt.toIso8601String(),
       'updated_at': instance.updatedAt.toIso8601String(),
       'user_id': instance.userId,
+      'image_url': instance.imageUrl,
     };
 
 const _$QuestionTypeEnumMap = {
