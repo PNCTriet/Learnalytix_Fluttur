@@ -11,59 +11,103 @@ class FlashcardService {
   FlashcardService(this._supabase);
 
   Future<List<Flashcard>> getFlashcards() async {
+    print('Starting to fetch flashcards from Supabase...');
     try {
       final response = await _supabase
           .from('flashcards')
           .select()
           .order('created_at', ascending: false);
 
-      if (response == null) return [];
+      print('Supabase response: $response');
+      
+      if (response == null) {
+        print('No data returned from Supabase');
+        return [];
+      }
 
+      print('Processing ${response.length} flashcards...');
+      
       return response.map<Flashcard>((json) {
         try {
-          // Xử lý các trường có thể null
-          final processedJson = Map<String, dynamic>.from(json);
-          processedJson['question'] = json['question'] ?? '';
-          processedJson['type'] = json['type'] ?? 'multiple_choice';
-          processedJson['difficulty'] = json['difficulty'] ?? 'easy';
-          processedJson['study_mode'] = json['study_mode'] ?? 'learn';
-          processedJson['category'] = json['category'] ?? '';
-          processedJson['correct_answer'] = json['correct_answer'] ?? '';
-          processedJson['explanation'] = json['explanation'] ?? '';
-          processedJson['tags'] = json['tags'] ?? [];
-          processedJson['time_limit'] = json['time_limit'] ?? 0;
-          processedJson['user_id'] = json['user_id'] ?? '';
+          print('Processing flashcard with data: $json');
+          
+          // Tạo một map mới với các trường đã được xử lý và giá trị mặc định
+          final processedJson = {
+            'id': json['id'] ?? '',
+            'question': json['question_text'] ?? '',
+            'correct_answer': json['answer_text'] ?? '',
+            'type': _parseQuestionType(json['question_type']),
+            'difficulty': _parseDifficultyLevel(json['difficulty']),
+            'study_mode': _parseStudyMode(json['study_mode']),
+            'category': json['category'] ?? '',
+            'explanation': json['explanation'] ?? '',
+            'tags': json['tags'] ?? [],
+            'time_limit': json['time_limit'] ?? 0,
+            'created_at': json['created_at'] ?? DateTime.now(),
+            'updated_at': json['updated_at'] ?? DateTime.now(),
+            'last_reviewed': json['last_reviewed'],
+            'next_review': json['next_review'],
+            'user_id': json['user_id'] ?? '',
+            'image_url': json['image_url'],
+            'options': json['options'] != null ? (json['options'] as List)
+                .map((option) => MultipleChoiceOption.fromJson(option))
+                .toList() : [],
+          };
 
-          return Flashcard.fromJson(processedJson);
+          final flashcard = Flashcard.fromJson(processedJson);
+          print('Successfully created flashcard: ${flashcard.id}');
+          return flashcard;
         } catch (e) {
           print('Error parsing flashcard: $e');
-          return Flashcard(
-            id: json['id'] ?? '',
-            question: json['question'] ?? '',
-            type: QuestionType.multipleChoice,
-            difficulty: DifficultyLevel.easy,
-            studyMode: StudyMode.learn,
-            category: json['category'],
-            correctAnswer: json['correct_answer'],
-            explanation: json['explanation'],
-            options: [],
-            tags: [],
-            timeLimit: json['time_limit'],
-            lastReviewed: json['last_reviewed'] != null
-                ? DateTime.parse(json['last_reviewed'])
-                : null,
-            nextReview: json['next_review'] != null
-                ? DateTime.parse(json['next_review'])
-                : null,
-            createdAt: DateTime.parse(json['created_at']),
-            updatedAt: DateTime.parse(json['updated_at']),
-            userId: json['user_id'] ?? '',
-          );
+          print('JSON data that caused error: $json');
+          rethrow;
         }
       }).toList();
     } catch (e) {
       print('Error in getFlashcards: $e');
       rethrow;
+    }
+  }
+
+  QuestionType _parseQuestionType(String? value) {
+    if (value == null) return QuestionType.multipleChoice;
+    switch (value.toLowerCase()) {
+      case 'multiple_choice':
+        return QuestionType.multipleChoice;
+      case 'true_false':
+        return QuestionType.trueFalse;
+      case 'open_ended':
+        return QuestionType.openEnded;
+      default:
+        return QuestionType.multipleChoice;
+    }
+  }
+
+  DifficultyLevel _parseDifficultyLevel(String? value) {
+    if (value == null) return DifficultyLevel.easy;
+    switch (value.toLowerCase()) {
+      case 'easy':
+        return DifficultyLevel.easy;
+      case 'medium':
+        return DifficultyLevel.medium;
+      case 'hard':
+        return DifficultyLevel.hard;
+      default:
+        return DifficultyLevel.easy;
+    }
+  }
+
+  StudyMode _parseStudyMode(String? value) {
+    if (value == null) return StudyMode.learn;
+    switch (value.toLowerCase()) {
+      case 'learn':
+        return StudyMode.learn;
+      case 'review':
+        return StudyMode.review;
+      case 'test':
+        return StudyMode.test;
+      default:
+        return StudyMode.learn;
     }
   }
 
@@ -104,9 +148,9 @@ class FlashcardService {
           // Xử lý các trường có thể null
           final processedJson = Map<String, dynamic>.from(flashcardJson);
           processedJson['question'] = flashcardJson['question'] ?? '';
-          processedJson['type'] = flashcardJson['type'] ?? 'multiple_choice';
-          processedJson['difficulty'] = flashcardJson['difficulty'] ?? 'easy';
-          processedJson['study_mode'] = flashcardJson['study_mode'] ?? 'learn';
+          processedJson['type'] = _parseQuestionType(flashcardJson['type']);
+          processedJson['difficulty'] = _parseDifficultyLevel(flashcardJson['difficulty']);
+          processedJson['study_mode'] = _parseStudyMode(flashcardJson['study_mode']);
           processedJson['category'] = flashcardJson['category'] ?? '';
           processedJson['correct_answer'] = flashcardJson['correct_answer'] ?? '';
           processedJson['explanation'] = flashcardJson['explanation'] ?? '';

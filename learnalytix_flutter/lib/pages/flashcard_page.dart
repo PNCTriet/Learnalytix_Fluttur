@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/flashcard_provider.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../models/flashcard.dart';
 import 'flashcard_detail_page.dart';
 
 class FlashcardPage extends StatefulWidget {
@@ -88,26 +89,28 @@ class _FlashcardPageState extends State<FlashcardPage> {
             );
           }
 
-          if (provider.flashcards.isEmpty) {
+          final flashcards = provider.flashcards;
+          if (flashcards.isEmpty) {
             return const Center(
               child: Text('No flashcards found'),
             );
           }
 
           return ListView.builder(
-            itemCount: provider.flashcards.length,
+            itemCount: flashcards.length,
             itemBuilder: (context, index) {
-              final card = provider.flashcards[index];
+              final flashcard = flashcards[index];
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: ListTile(
-                  title: Text(card.question),
-                  subtitle: Text(card.type.toString().split('.').last),
+                  title: Text(flashcard.question),
+                  subtitle: Text('Type: ${flashcard.type.toString().split('.').last}'),
+                  trailing: const Icon(Icons.arrow_forward_ios),
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => FlashcardDetailPage(card: card),
+                        builder: (context) => FlashcardDetailPage(flashcard: flashcard),
                       ),
                     );
                   },

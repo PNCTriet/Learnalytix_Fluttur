@@ -99,20 +99,22 @@ class FlashcardDetailPage extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 8),
-              ...flashcard.options!.map((option) => Padding(
+              ...flashcard.options!.asMap().entries.map((entry) => Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Row(
                       children: [
                         Text(
-                          '${option.letter}. ',
+                          '${String.fromCharCode(65 + entry.key)}. ',
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                         Expanded(
                           child: Text(
-                            option.text,
+                            entry.value.text,
                             style: Theme.of(context).textTheme.bodyLarge,
                           ),
                         ),
+                        if (entry.value.isCorrect)
+                          const Icon(Icons.check_circle, color: Colors.green),
                       ],
                     ),
                   )),
