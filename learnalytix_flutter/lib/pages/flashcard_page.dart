@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/flashcard_provider.dart';
 import '../providers/auth_provider.dart';
-import '../models/flashcard.dart';
+import '../providers/flashcard_provider.dart';
 import '../widgets/bottom_nav_bar.dart';
+import 'flashcard_detail_page.dart';
 
 class FlashcardPage extends StatefulWidget {
   const FlashcardPage({super.key});
@@ -14,6 +14,15 @@ class FlashcardPage extends StatefulWidget {
 
 class _FlashcardPageState extends State<FlashcardPage> {
   int _selectedIndex = 1; // Index của trang flashcards
+
+  @override
+  void initState() {
+    super.initState();
+    // Load flashcards khi trang được khởi tạo
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<FlashcardProvider>(context, listen: false).loadFlashcards();
+    });
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -37,17 +46,6 @@ class _FlashcardPageState extends State<FlashcardPage> {
         }
         break;
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _loadFlashcards();
-  }
-
-  Future<void> _loadFlashcards() async {
-    final provider = Provider.of<FlashcardProvider>(context, listen: false);
-    await provider.loadFlashcards();
   }
 
   @override
@@ -80,12 +78,6 @@ class _FlashcardPageState extends State<FlashcardPage> {
       ),
       body: Consumer<FlashcardProvider>(
         builder: (context, provider, child) {
-          if (!isLoggedIn) {
-            return const Center(
-              child: Text('Please sign in to view your flashcards'),
-            );
-          }
-
           if (provider.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -96,42 +88,29 @@ class _FlashcardPageState extends State<FlashcardPage> {
             );
           }
 
-          final flashcards = provider.flashcards;
-          if (flashcards.isEmpty) {
+          if (provider.flashcards.isEmpty) {
             return const Center(
-              child: Text('No flashcards found. Create your first one!'),
+              child: Text('No flashcards found'),
             );
           }
 
           return ListView.builder(
-            itemCount: flashcards.length,
+            itemCount: provider.flashcards.length,
             itemBuilder: (context, index) {
-              final flashcard = flashcards[index];
+              final card = provider.flashcards[index];
               return Card(
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: ListTile(
-                  title: Text(flashcard.question),
-                  subtitle: Text(
-                    'Type: ${flashcard.type.toString().split('.').last}\n'
-                    'Difficulty: ${flashcard.difficulty.toString().split('.').last}',
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (flashcard.options != null && flashcard.options!.isNotEmpty)
-                        const Icon(Icons.list, color: Colors.blue),
-                      const SizedBox(width: 8),
-                      IconButton(
-                        icon: const Icon(Icons.visibility),
-                        onPressed: () {
-                          // TODO: Navigate to detail page
-                        },
+                  title: Text(card.question),
+                  subtitle: Text(card.type.toString().split('.').last),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => FlashcardDetailPage(card: card),
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               );
             },
@@ -141,7 +120,12 @@ class _FlashcardPageState extends State<FlashcardPage> {
       floatingActionButton: isLoggedIn
           ? FloatingActionButton(
               onPressed: () {
-                // TODO: Navigate to create flashcard page
+                // TODO: Implement create new flashcard
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Create new flashcard feature coming soon!'),
+                  ),
+                );
               },
               child: const Icon(Icons.add),
             )

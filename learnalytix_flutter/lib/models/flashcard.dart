@@ -1,57 +1,55 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'enums.dart';
 import 'multiple_choice_option.dart';
+import 'package:learnalytix_flutter/utils/enum_utils.dart';
 
 part 'flashcard.freezed.dart';
 part 'flashcard.g.dart';
-
-enum QuestionType {
-  @JsonValue('multiple_choice')
-  multipleChoice,
-  @JsonValue('open_ended')
-  openEnded,
-  @JsonValue('fill_in_blank')
-  fillInBlank,
-}
-
-enum DifficultyLevel {
-  @JsonValue('easy')
-  easy,
-  @JsonValue('medium')
-  medium,
-  @JsonValue('hard')
-  hard,
-}
-
-enum StudyMode {
-  @JsonValue('learn')
-  learn,
-  @JsonValue('review')
-  review,
-  @JsonValue('practice')
-  practice,
-}
 
 @freezed
 class Flashcard with _$Flashcard {
   const factory Flashcard({
     required String id,
     required String question,
+    @JsonKey(name: 'type', unknownEnumValue: QuestionType.multipleChoice)
     required QuestionType type,
+    @JsonKey(name: 'difficulty', unknownEnumValue: DifficultyLevel.easy)
     required DifficultyLevel difficulty,
-    String? category,
-    required DateTime createdAt,
-    required DateTime updatedAt,
-    required String userId,
-    DateTime? lastReviewed,
-    DateTime? nextReview,
-    int? timeLimit,
+    @JsonKey(name: 'study_mode', unknownEnumValue: StudyMode.learn)
     required StudyMode studyMode,
-    String? correctAnswer,
+    String? category,
+    @JsonKey(name: 'correct_answer') String? correctAnswer,
     String? explanation,
-    List<String>? tags,
     List<MultipleChoiceOption>? options,
+    List<String>? tags,
+    @JsonKey(name: 'time_limit') int? timeLimit,
+    @JsonKey(name: 'last_reviewed') DateTime? lastReviewed,
+    @JsonKey(name: 'next_review') DateTime? nextReview,
+    @JsonKey(name: 'created_at') required DateTime createdAt,
+    @JsonKey(name: 'updated_at') required DateTime updatedAt,
+    @JsonKey(name: 'user_id') required String userId,
   }) = _Flashcard;
 
-  factory Flashcard.fromJson(Map<String, dynamic> json) =>
-      _$FlashcardFromJson(json);
+  factory Flashcard.fromJson(Map<String, dynamic> json) => _$FlashcardFromJson(json);
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'question': question,
+      'type': type.toString().split('.').last,
+      'difficulty': difficulty.toString().split('.').last,
+      'study_mode': studyMode.toString().split('.').last,
+      'category': category,
+      'correct_answer': correctAnswer,
+      'explanation': explanation,
+      'options': options?.map((option) => option.toJson()).toList(),
+      'tags': tags,
+      'time_limit': timeLimit,
+      'last_reviewed': lastReviewed?.toIso8601String(),
+      'next_review': nextReview?.toIso8601String(),
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
+      'user_id': userId,
+    };
+  }
 } 

@@ -10,26 +10,29 @@ _$FlashcardImpl _$$FlashcardImplFromJson(Map<String, dynamic> json) =>
     _$FlashcardImpl(
       id: json['id'] as String,
       question: json['question'] as String,
-      type: $enumDecode(_$QuestionTypeEnumMap, json['type']),
-      difficulty: $enumDecode(_$DifficultyLevelEnumMap, json['difficulty']),
+      type: $enumDecode(_$QuestionTypeEnumMap, json['type'],
+          unknownValue: QuestionType.multipleChoice),
+      difficulty: $enumDecode(_$DifficultyLevelEnumMap, json['difficulty'],
+          unknownValue: DifficultyLevel.easy),
+      studyMode: $enumDecode(_$StudyModeEnumMap, json['study_mode'],
+          unknownValue: StudyMode.learn),
       category: json['category'] as String?,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
-      userId: json['userId'] as String,
-      lastReviewed: json['lastReviewed'] == null
-          ? null
-          : DateTime.parse(json['lastReviewed'] as String),
-      nextReview: json['nextReview'] == null
-          ? null
-          : DateTime.parse(json['nextReview'] as String),
-      timeLimit: (json['timeLimit'] as num?)?.toInt(),
-      studyMode: $enumDecode(_$StudyModeEnumMap, json['studyMode']),
-      correctAnswer: json['correctAnswer'] as String?,
+      correctAnswer: json['correct_answer'] as String?,
       explanation: json['explanation'] as String?,
-      tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
       options: (json['options'] as List<dynamic>?)
           ?.map((e) => MultipleChoiceOption.fromJson(e as Map<String, dynamic>))
           .toList(),
+      tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      timeLimit: (json['time_limit'] as num?)?.toInt(),
+      lastReviewed: json['last_reviewed'] == null
+          ? null
+          : DateTime.parse(json['last_reviewed'] as String),
+      nextReview: json['next_review'] == null
+          ? null
+          : DateTime.parse(json['next_review'] as String),
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
+      userId: json['user_id'] as String,
     );
 
 Map<String, dynamic> _$$FlashcardImplToJson(_$FlashcardImpl instance) =>
@@ -38,24 +41,24 @@ Map<String, dynamic> _$$FlashcardImplToJson(_$FlashcardImpl instance) =>
       'question': instance.question,
       'type': _$QuestionTypeEnumMap[instance.type]!,
       'difficulty': _$DifficultyLevelEnumMap[instance.difficulty]!,
+      'study_mode': _$StudyModeEnumMap[instance.studyMode]!,
       'category': instance.category,
-      'createdAt': instance.createdAt.toIso8601String(),
-      'updatedAt': instance.updatedAt.toIso8601String(),
-      'userId': instance.userId,
-      'lastReviewed': instance.lastReviewed?.toIso8601String(),
-      'nextReview': instance.nextReview?.toIso8601String(),
-      'timeLimit': instance.timeLimit,
-      'studyMode': _$StudyModeEnumMap[instance.studyMode]!,
-      'correctAnswer': instance.correctAnswer,
+      'correct_answer': instance.correctAnswer,
       'explanation': instance.explanation,
-      'tags': instance.tags,
       'options': instance.options,
+      'tags': instance.tags,
+      'time_limit': instance.timeLimit,
+      'last_reviewed': instance.lastReviewed?.toIso8601String(),
+      'next_review': instance.nextReview?.toIso8601String(),
+      'created_at': instance.createdAt.toIso8601String(),
+      'updated_at': instance.updatedAt.toIso8601String(),
+      'user_id': instance.userId,
     };
 
 const _$QuestionTypeEnumMap = {
   QuestionType.multipleChoice: 'multiple_choice',
   QuestionType.openEnded: 'open_ended',
-  QuestionType.fillInBlank: 'fill_in_blank',
+  QuestionType.trueFalse: 'true_false',
 };
 
 const _$DifficultyLevelEnumMap = {
@@ -67,5 +70,5 @@ const _$DifficultyLevelEnumMap = {
 const _$StudyModeEnumMap = {
   StudyMode.learn: 'learn',
   StudyMode.review: 'review',
-  StudyMode.practice: 'practice',
+  StudyMode.test: 'test',
 };
